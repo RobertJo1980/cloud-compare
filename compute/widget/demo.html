@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cloud Compute Compare</title>
+<style>
+/* Page shell for the widget demo. The card itself is rendered by <cloud-compute-compare>. */
+:root { --bg: #f9f9f7; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781; --link: #1c5cab; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #0d0d0d; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781; --link: #86b6ef; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #0d0d0d; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781; --link: #86b6ef; color-scheme: dark; }
+body { background: var(--bg); color: var(--ink); margin: 0; padding-block: 28px; padding-inline: 16px; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 640px; margin-inline: auto; display: grid; gap: 24px; }
+.meta { color: var(--muted); font-size: .8rem; margin: 0; }
+.gloss h2 { font-size: 1rem; }
+.gloss dl { margin: 0; display: grid; gap: 10px; }
+.gloss dt { font-weight: 600; }
+.gloss dd { margin: 0; color: var(--ink-2); font-size: .9rem; }
+a { color: var(--link); }
+</style>
+
+<main>
+  <p class="meta">Demo of the embeddable widget: data from <code>pricing.json</code>, logic in <code>calc.js</code>, UI in <code>cloud-compute-compare.js</code>. Embed with one script tag and one element.</p>
+
+  <cloud-compute-compare src="../pricing.json"></cloud-compute-compare>
+
+  <div class="gloss">
+    <h2>What the options mean</h2>
+    <p class="meta">In a blog embed, the widget’s “More →” links point here via its <code>guide-base</code> attribute.</p>
+    <dl>
+      <dt id="g-vcpu">vCPUs</dt>
+      <dd>A vCPU is a share of a physical processor. On Intel servers, and on many AMD ones, it is one thread of a core, so two vCPUs are one physical core. On Arm servers, and on some AMD families such as those from AWS, each vCPU is a whole core. The same vCPU count can therefore mean different amounts of processor.</dd>
+      <dt id="g-memory">Memory</dt>
+      <dd>Providers sell fixed shapes. General-purpose servers have about 4 GB per vCPU, compute-optimised ones 2 GB and memory-optimised ones 8 GB. If you ask for more memory than a shape gives, the widget moves to the cheapest shape or size that fits, which is why a row can show more vCPUs or memory than you asked for.</dd>
+      <dt id="g-disk">Disk</dt>
+      <dd>AWS, Azure and Google charge for the disk separately, per GB a month. DigitalOcean, Hetzner, OVHcloud and Akamai include a local disk with each plan, and you pay only for storage beyond it. Azure’s Standard SSD is sold in fixed sizes, so 100 GB is billed as 128 GB.</dd>
+      <dt id="g-shared">Shared and burstable CPUs</dt>
+      <dd>The cheapest servers do not give you a processor full time. Burstable servers (AWS T, Azure B) earn credits while idle and spend them when busy; run flat out and they are slowed down or billed extra. Shared-CPU plans (DigitalOcean Basic, Hetzner CPX, Akamai Shared, OVHcloud Discovery and Google’s shared-core E2) share processor time between customers. AWS flex instances sit in between, with full performance at least 95% of the time. “Dedicated CPU only” removes all of these.</dd>
+      <dt id="g-generation">Processor generations</dt>
+      <dd>Providers keep older hardware on sale, and a vCPU on a 2019 processor does less work than one on a 2024 processor. Each row shows the year its processor generation launched. “Recent processors only” keeps servers on generations from 2022 or later: Intel Sapphire Rapids, Emerald Rapids and Xeon 6; AMD Genoa and Turin; AWS Graviton4 and Graviton5; Azure Cobalt 100; and Google Axion. Where a provider does not say which processor a plan uses, the plan is left out.</dd>
+      <dt id="g-arm">Arm processors</dt>
+      <dd>AWS Graviton, Azure Cobalt and Google Axion servers use Arm processors, not the x86 design from Intel and AMD. They usually cost less for the same size and each vCPU is a whole core, but your software has to be available for Arm. Most open-source software is; some commercial software is not.</dd>
+      <dt id="g-fastdisk">High-performance disk</dt>
+      <dd>A standard disk delivers about 3,000 IOPS on AWS and Google and 500 on Azure’s Standard SSD. This option asks for 10,000 IOPS and 250 MB/s. AWS, Azure and Google sell that performance separately, which adds about $40 a month to a 100 GB disk. OVHcloud’s fast volumes get quicker as they get bigger, so a larger disk is billed. DigitalOcean volumes reach 10,000 IOPS only on dedicated-CPU servers. Hetzner and Akamai volumes stop at 5,000 and 8,000 IOPS, so those rows are marked. Disk included with a plan is local SSD and is counted as it is.</dd>
+    </dl>
+  </div>
+</main>
+
+<script type="module" src="cloud-compute-compare.js"></script>
