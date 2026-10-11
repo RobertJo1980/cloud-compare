@@ -2,7 +2,7 @@
 
 Small, embeddable tools for comparing what cloud providers charge. Each tool is a framework-free web component with its pricing data kept alongside it, so the numbers can be checked and corrected in one place.
 
-See one running in [Which Cloud Storage Is the Best Value?](https://blog.rj.ms/blog/cloud-storage-best-value/) on the Cloud Dev Blog.
+See one running in [What's the Best Value Cloud Storage for My Use Case?](https://blog.rj.ms/blog/cloud-storage-best-value/) on the Cloud Dev Blog.
 
 ## Tools
 
