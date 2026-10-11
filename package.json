@@ -1,7 +1,9 @@
 {
   "name": "cloud-compare",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Embeddable tools for comparing what cloud providers charge",
+  "license": "MIT",
+  "repository": "github:RobertJo1980/cloud-compare",
   "private": true,
   "type": "module",
   "exports": {
@@ -9,6 +11,7 @@
     "./storage/pricing.json": "./storage/pricing.json"
   },
   "files": [
+    "LICENSE-DATA",
     "storage/widget/cloud-cost-compare.js",
     "storage/widget/calc.js",
     "storage/pricing.json"

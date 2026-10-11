@@ -36,7 +36,7 @@ Then open <http://localhost:8000/storage/widget/demo.html>.
 Install a tagged version straight from GitHub:
 
 ```bash
-npm install github:RobertJo1980/cloud-compare#v0.1.0
+npm install github:RobertJo1980/cloud-compare#v0.1.1
 ```
 
 Each tool's README shows how to embed it.
@@ -48,3 +48,8 @@ Prices are public list prices, checked by hand against each provider's own prici
 If a price is wrong or out of date, open an issue or a pull request that links to the provider's pricing page.
 
 This project is not affiliated with or endorsed by any of the providers it compares.
+
+## Licence
+
+- The code is under the [MIT licence](LICENSE).
+- The pricing data (the `pricing.json` files) is under [Creative Commons Attribution 4.0](LICENSE-DATA). If you reuse it, credit Robert Johnstone and link to this repository.

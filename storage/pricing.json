@@ -2,6 +2,8 @@
   "schema_version": 1,
   "currency": "USD",
   "last_verified": "2026-10-10",
+  "license": "CC-BY-4.0",
+  "attribution": "Robert Johnstone, https://github.com/RobertJo1980/cloud-compare",
   "normalization_notes": [
     "All operation prices normalized to per-1,000 operations. Native units: AWS per-1k, Azure per-10k, GCS per-1k, R2 per-million, B2 n/a (free).",
     "Storage prices are per unit-month, first volume tier. GCS officially prices per GiB (binary); AWS and Azure label prices per GB. Treated as directly comparable for estimates.",
