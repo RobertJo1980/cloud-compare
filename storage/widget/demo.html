@@ -1,6 +1,6 @@
 <title>Cloud Cost Compare</title>
 <style>
-/* Page shell for the widget demo — the card itself is rendered by <cloud-cost-compare>. */
+/* Page shell for the widget demo. The card itself is rendered by <cloud-cost-compare>. */
 :root { --bg: #f9f9f7; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781; --link: #1c5cab; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) { --bg: #0d0d0d; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781; --link: #86b6ef; color-scheme: dark; }
@@ -17,7 +17,7 @@ a { color: var(--link); }
 </style>
 
 <main>
-  <p class="meta">Demo of the embeddable widget — data from <code>pricing.json</code>, logic in <code>calc.js</code>, UI in <code>cloud-cost-compare.js</code>. Embed with one script tag and one element.</p>
+  <p class="meta">Demo of the embeddable widget: data from <code>pricing.json</code>, logic in <code>calc.js</code>, UI in <code>cloud-cost-compare.js</code>. Embed with one script tag and one element.</p>
 
   <cloud-cost-compare src="../pricing.json"></cloud-cost-compare>
 
@@ -30,17 +30,17 @@ a { color: var(--link); }
       <dt id="g-egress">Downloads (egress)</dt>
       <dd>Moving data out to the internet. AWS, Azure and GCS charge ~$0.09–0.12/GB after a free 100 GB (GCS: US buckets only); Cloudflare R2 is always free; Backblaze B2 is free up to 3× what you store; Wasabi is free provided monthly downloads stay under what you store.</dd>
       <dt id="g-requests">API requests</dt>
-      <dd>Every upload, list or download is an API call, usually priced per thousand. Writes cost ~10× reads. B2 and Wasabi don’t charge for requests at all. The per-request charge is the same wherever the call comes from — what changes with location is the <em>data transfer</em>: traffic to a VM in the same region is free, while downloads to the internet pay the egress rates above (this widget models the internet case).</dd>
+      <dd>Every upload, list or download is an API call, usually priced per thousand. Writes cost ~10× reads. B2 and Wasabi don’t charge for requests at all. The per-request charge is the same wherever the call comes from. What changes with location is the <em>data transfer</em>: traffic to a VM in the same region is free, while downloads to the internet pay the egress rates above (this widget models the internet case).</dd>
       <dt id="g-class">Storage classes</dt>
-      <dd>Standard for data in active use; Infrequent for data touched about monthly; Archive for data you may never read. Cheaper classes add retrieval fees, minimum stays, and sometimes hours-long restore waits — so the widget prices every class and shows each provider at its cheapest for your workload. Heavy downloads push the winner back toward Standard. B2 and Wasabi have a single class.</dd>
+      <dd>Standard for data in active use; Infrequent for data touched about monthly; Archive for data you may never read. Cheaper classes add retrieval fees, minimum stays, and sometimes hours-long restore waits, so the widget prices every class and shows each provider at its cheapest for your workload. Heavy downloads push the winner back toward Standard. B2 and Wasabi have a single class.</dd>
       <dt id="g-retrieval">Retrieval fees</dt>
-      <dd>Cooler classes charge per GB just to read data back, on top of egress — $0.01–0.05/GB. Offline archive tiers (S3 Glacier, Azure Archive) also take hours to restore.</dd>
+      <dd>Cooler classes charge per GB just to read data back, on top of egress: $0.01–0.05/GB. Offline archive tiers (S3 Glacier, Azure Archive) also take hours to restore.</dd>
       <dt id="g-minimums">Minimum stays</dt>
       <dd>Cool/archive classes bill 30–365 days per object even if you delete early. Wasabi applies 90 days to everything and bills at least 1 TB/month; B2 has no minimums.</dd>
       <dt id="g-redundancy">Redundancy</dt>
       <dd>How many copies your rent buys, and where. S3 and GCS replicate across three or more zones at list price; Azure’s headline prices are LRS (one datacentre) and zone-redundant ZRS costs ~10–30% more with no Archive tier; R2, B2 and Wasabi don’t publish a multi-zone model. The “Zone-redundant” toggle applies all of this.</dd>
       <dt id="g-region">Region</dt>
-      <dd>The toggle only shows providers with datacentres in that place — Backblaze B2 drops out of the UK view (its nearest region is Amsterdam) but returns in the EU view, and Cloudflare R2 carries a badge in the UK because it places data by “location hint” without a hard UK residency guarantee — its EU jurisdiction, by contrast, is a real guarantee. On price: AWS and GCS charge more in London than in US or EU regions (up to ~2× on archive tiers); Azure UK South is slightly cheaper than East US for hot data. R2, B2 and Wasabi use one global price list.</dd>
+      <dd>The toggle only shows providers with datacentres in that place. Backblaze B2 drops out of the UK view (its nearest region is Amsterdam) but returns in the EU view, and Cloudflare R2 carries a badge in the UK because it places data by “location hint” without a hard UK residency guarantee. Its EU jurisdiction, by contrast, is a real guarantee. On price: AWS and GCS charge more in London than in US or EU regions (up to ~2× on archive tiers); Azure UK South is slightly cheaper than East US for hot data. R2, B2 and Wasabi use one global price list.</dd>
     </dl>
   </div>
 </main>

@@ -36,7 +36,7 @@ Then open <http://localhost:8000/storage/widget/demo.html>.
 Install a tagged version straight from GitHub:
 
 ```bash
-npm install github:RobertJo1980/cloud-compare#v0.1.1
+npm install github:RobertJo1980/cloud-compare#v0.1.2
 ```
 
 Each tool's README shows how to embed it.

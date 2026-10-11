@@ -1,5 +1,5 @@
 /**
- * cloud-cost-compare — pricing logic.
+ * cloud-cost-compare: pricing logic.
  * Pure ES module: no DOM, no fetch. Takes the pricing.json object (schema_version 1)
  * and a workload, returns ranked monthly estimates.
  *

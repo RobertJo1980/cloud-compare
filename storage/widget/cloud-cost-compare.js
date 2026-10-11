@@ -1,5 +1,5 @@
 /**
- * <cloud-cost-compare> — embeddable cloud storage cost comparison widget.
+ * <cloud-cost-compare>: embeddable cloud storage cost comparison widget.
  *
  * Usage:
  *   <script type="module" src="cloud-cost-compare.js"></script>
@@ -111,7 +111,7 @@ details.row > summary:focus-visible { outline: 2px solid var(--link); }
         <output class="val" id="v-stored"></output>
       </div>
       <input type="range" id="in-stored" min="0" max="1000" value="500">
-      <div class="help" id="h-stored" hidden>Average data sitting in the bucket over the month — the “rent” meter, priced per GB. <a data-g="g-stored">More →</a></div>
+      <div class="help" id="h-stored" hidden>Average data sitting in the bucket over the month: the “rent” meter, priced per GB. <a data-g="g-stored">More →</a></div>
     </div>
     <div class="ctl">
       <div class="ctl-top">
@@ -138,7 +138,7 @@ details.row > summary:focus-visible { outline: 2px solid var(--link); }
         <output class="val" id="v-reads"></output>
       </div>
       <input type="range" id="in-reads" min="0" max="1000" value="750">
-      <div class="help" id="h-reads" hidden>API calls that fetch data: downloads and metadata checks (GET-type / Class B) — the <em>count</em> of requests, not the bytes (that’s “Data downloaded”). Roughly 10× cheaper than writes. <a data-g="g-requests">More →</a></div>
+      <div class="help" id="h-reads" hidden>API calls that fetch data: downloads and metadata checks (GET-type / Class B). This is the <em>count</em> of requests, not the bytes (that’s “Data downloaded”). Roughly 10× cheaper than writes. <a data-g="g-requests">More →</a></div>
     </div>
     <div class="ctl">
       <div class="ctl-top">
@@ -157,7 +157,7 @@ details.row > summary:focus-visible { outline: 2px solid var(--link); }
   </div>
 
   <div class="results">
-    <h3>Estimated monthly bill — cheapest first</h3>
+    <h3>Estimated monthly bill, cheapest first</h3>
     <div class="rows" id="rows"><p class="drop">Loading prices…</p></div>
     <p class="foot" id="foot"></p>
   </div>
@@ -255,7 +255,7 @@ class CloudCostCompare extends HTMLElement {
         </summary>
         <div class="bd">
           <table>
-            <tr><td>Storage — ${q.best.cls.label}</td><td>${money(q.best.storage)}</td></tr>
+            <tr><td>Storage (${q.best.cls.label})</td><td>${money(q.best.storage)}</td></tr>
             <tr><td>Egress</td><td>${money(q.best.egress)}</td></tr>
             <tr><td>Requests</td><td>${money(q.best.requests)}</td></tr>
             ${q.best.retrieval ? `<tr><td>Retrieval</td><td>${money(q.best.retrieval)}</td></tr>` : ""}
@@ -269,9 +269,9 @@ class CloudCostCompare extends HTMLElement {
         </div>
       </details>`;
     }).join("")
-    + excluded.map(q => `<p class="drop">Not shown in ${region.toUpperCase()}: ${q.provider.name} — ${q.reason}.</p>`).join("");
+    + excluded.map(q => `<p class="drop">Not shown in ${region.toUpperCase()}: ${q.provider.name}, ${q.reason}.</p>`).join("");
 
-    $("foot").textContent = `Each provider is shown at its cheapest storage class for this workload — expand a row to see all its classes. List prices verified ${this._pricing.last_verified} · Estimates, not quotes — check each provider before committing. Simplified: first-tier egress rates, monthly free tiers not modelled, retrieval assumed equal to downloads, archive restore-request fees ignored.`;
+    $("foot").textContent = `Each provider is shown at its cheapest storage class for this workload. Expand a row to see all its classes. List prices verified ${this._pricing.last_verified}. These are estimates, not quotes, so check each provider before committing. Simplified: first-tier egress rates, monthly free tiers not modelled, retrieval assumed equal to downloads, archive restore-request fees ignored.`;
   }
 }
 
