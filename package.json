@@ -1,0 +1,16 @@
+{
+  "name": "cloud-compare",
+  "version": "0.1.0",
+  "description": "Embeddable tools for comparing what cloud providers charge",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./storage": "./storage/widget/cloud-cost-compare.js",
+    "./storage/pricing.json": "./storage/pricing.json"
+  },
+  "files": [
+    "storage/widget/cloud-cost-compare.js",
+    "storage/widget/calc.js",
+    "storage/pricing.json"
+  ]
+}
