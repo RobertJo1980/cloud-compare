@@ -1,0 +1,4 @@
+# Claude instruction files stay on this machine, never in this public repo.
+CLAUDE.md
+AGENTS.md
+.claude/

@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "currency": "USD",
+  "last_verified": "2026-10-10",
+  "license": "CC-BY-4.0",
+  "attribution": "Robert Johnstone, https://github.com/RobertJo1980/cloud-compare",
+  "normalization_notes": [
+    "All operation prices normalized to per-1,000 operations. Native units: AWS per-1k, Azure per-10k, GCS per-1k, R2 per-million, B2 n/a (free).",
+    "Storage prices are per unit-month, first volume tier. GCS officially prices per GiB (binary); AWS and Azure label prices per GB. Treated as directly comparable for estimates.",
+    "Prices are pay-as-you-go list prices, single region, locally-redundant tier (LRS or equivalent), excluding VAT/taxes and committed-use or reserved discounts.",
+    "regions.us / regions.uk / regions.eu name each provider's compared regions. R2, B2 and Wasabi publish one global price list, so their regional values are identical by definition.",
+    "EU regions compared: AWS eu-west-1 (Ireland), Azure West Europe (Netherlands), GCS europe-west1 (Belgium) - each cloud's mainstream low-cost EU region."
+  ],
+  "class_bands": {
+    "hot": "frequently accessed data",
+    "infrequent": "accessed ~monthly",
+    "cold": "accessed ~quarterly or less",
+    "archive": "rarely accessed; may be offline (hours to restore)",
+    "deep_archive": "coldest, cheapest, slowest"
+  },
+  "providers": [
+    {
+      "id": "aws-s3",
+      "name": "AWS S3",
+      "pricing_url": "https://aws.amazon.com/s3/pricing/",
+      "verified_via": "AWS Price List API (pricing.us-east-1.amazonaws.com), offer files published 2026-09-11..28",
+      "last_verified": "2026-10-10",
+      "storage_unit": "GB",
+      "regions": { "us": "us-east-1 (N. Virginia)", "uk": "eu-west-2 (London)", "eu": "eu-west-1 (Ireland)" },
+      "local_presence": { "us": "region", "uk": "region", "eu": "region" },
+      "multi_zone": { "status": "included", "note": "S3 Standard, IA and Glacier classes store data across >=3 availability zones by default (One Zone classes excepted).", "source": "https://aws.amazon.com/s3/storage-classes/" },
+      "classes": [
+        {
+          "id": "standard", "band": "hot", "label": "S3 Standard",
+          "storage_gb_month": { "us": 0.023, "uk": 0.024, "eu": 0.023 },
+          "write_per_1k": { "us": 0.005, "uk": 0.0053, "eu": 0.005 },
+          "read_per_1k": { "us": 0.0004, "uk": 0.00042, "eu": 0.0004 },
+          "retrieval_per_gb": { "us": 0, "uk": 0, "eu": 0 },
+          "min_duration_days": 0, "min_object_kb": 0,
+          "notes": ["First 50 TB tier; next 450 TB $0.022 (us/eu) / $0.023 (uk), over 500 TB $0.021 (us/eu) / $0.022 (uk)."]
+        },
+        {
+          "id": "standard-ia", "band": "infrequent", "label": "S3 Standard-IA",
+          "storage_gb_month": { "us": 0.0125, "uk": 0.0131, "eu": 0.0125 },
+          "write_per_1k": { "us": 0.01, "uk": 0.01, "eu": 0.01 },
+          "read_per_1k": { "us": 0.001, "uk": 0.001, "eu": 0.001 },
+          "retrieval_per_gb": { "us": 0.01, "uk": 0.01, "eu": 0.01 },
+          "min_duration_days": 30, "min_object_kb": 128
+        },
+        {
+          "id": "glacier-instant", "band": "cold", "label": "S3 Glacier Instant Retrieval",
+          "storage_gb_month": { "us": 0.004, "uk": 0.005, "eu": 0.004 },
+          "write_per_1k": { "us": 0.02, "uk": 0.02, "eu": 0.02 },
+          "read_per_1k": { "us": 0.01, "uk": 0.01, "eu": 0.01 },
+          "retrieval_per_gb": { "us": 0.03, "uk": 0.03, "eu": 0.03 },
+          "min_duration_days": 90, "min_object_kb": 128,
+          "notes": ["Online class: millisecond access, no restore step."]
+        },
+        {
+          "id": "glacier-flexible", "band": "archive", "label": "S3 Glacier Flexible Retrieval",
+          "storage_gb_month": { "us": 0.0036, "uk": 0.00405, "eu": 0.0036 },
+          "write_per_1k": { "us": 0.03, "uk": 0.0318, "eu": 0.033 },
+          "read_per_1k": { "us": 0.0004, "uk": 0.00042, "eu": 0.0004 },
+          "retrieval_per_gb": { "us": 0.01, "uk": 0.0105, "eu": 0.01 },
+          "min_duration_days": 90, "min_object_kb": 0,
+          "offline": true, "restore": "3-5 h standard",
+          "notes": [
+            "Offline: standard restore takes 3-5 hours and also bills restore requests at $0.05 (us) / $0.053 (uk) / $0.055 (eu) per 1k.",
+            "Bulk restore (5-12h) is free per GB; expedited (~1-5 min) $0.03/GB + $0.01 per request.",
+            "~40 KB per-object metadata overhead billed (32 KB class rate + 8 KB Standard rate) - unverified this round."
+          ]
+        },
+        {
+          "id": "deep-archive", "band": "deep_archive", "label": "S3 Glacier Deep Archive",
+          "storage_gb_month": { "us": 0.00099, "uk": 0.0018, "eu": 0.00099 },
+          "write_per_1k": { "us": 0.05, "uk": 0.06, "eu": 0.055 },
+          "read_per_1k": { "us": 0.0004, "uk": 0.00042, "eu": 0.0004 },
+          "retrieval_per_gb": { "us": 0.02, "uk": 0.021, "eu": 0.02 },
+          "min_duration_days": 180, "min_object_kb": 0,
+          "offline": true, "restore": "~12 h standard",
+          "notes": ["Offline: standard restore ~12h, plus restore requests $0.10 (us) / $0.106 (uk) / $0.11 (eu) per 1k; bulk restore $0.0025 (us) / $0.005 (uk) / $0.003 (eu) per GB."]
+        }
+      ],
+      "egress": {
+        "free": { "type": "flat_gb", "amount": 100, "note": "Global allowance aggregated across all AWS services and regions." },
+        "tiers": [
+          { "up_to_gb": 10240, "per_gb": { "us": 0.09, "uk": 0.09, "eu": 0.09 } },
+          { "up_to_gb": 51200, "per_gb": { "us": 0.085, "uk": 0.085, "eu": 0.085 } },
+          { "up_to_gb": 153600, "per_gb": { "us": 0.07, "uk": 0.07, "eu": 0.07 } },
+          { "up_to_gb": null, "per_gb": { "us": 0.05, "uk": 0.05, "eu": 0.05 } }
+        ]
+      },
+      "free_tier": "No always-free S3 quota on current plans; new accounts get up to $200 in credits over 6 months. 100 GB/month free egress (global)."
+    },
+    {
+      "id": "azure-blob",
+      "name": "Azure Blob Storage",
+      "pricing_url": "https://azure.microsoft.com/en-us/pricing/details/storage/blobs/",
+      "verified_via": "Azure Retail Prices API + the pricing page's own JSON feed (two official sources, exact agreement). Block Blob, GPv2, flat namespace, LRS.",
+      "last_verified": "2026-10-10",
+      "storage_unit": "GB",
+      "regions": { "us": "East US", "uk": "UK South", "eu": "West Europe (Netherlands)" },
+      "local_presence": { "us": "region", "uk": "region", "eu": "region" },
+      "multi_zone": { "status": "priced", "note": "Zone-redundant mode uses the ZRS prices below; the Archive tier does not support ZRS.", "source": "https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy" },
+      "native_ops_unit": "per 10,000 (normalized here to per 1,000)",
+      "classes": [
+        {
+          "id": "hot", "band": "hot", "label": "Hot",
+          "storage_gb_month": { "us": 0.0208, "uk": 0.0192, "eu": 0.0196 },
+          "write_per_1k": { "us": 0.005, "uk": 0.0059, "eu": 0.0054 },
+          "read_per_1k": { "us": 0.0004, "uk": 0.00047, "eu": 0.00043 },
+          "retrieval_per_gb": { "us": 0, "uk": 0, "eu": 0 },
+          "min_duration_days": 0, "min_object_kb": 0,
+          "zrs": {
+            "storage_gb_month": { "us": 0.026, "uk": 0.024, "eu": 0.024 },
+            "write_per_1k": { "us": 0.00625, "uk": 0.007375, "eu": 0.00675 },
+            "read_per_1k": { "us": 0.0004, "uk": 0.00047, "eu": 0.00043 },
+            "retrieval_per_gb": { "us": 0, "uk": 0, "eu": 0 }
+          },
+          "notes": ["First 50 TB tier; Hot has volume tiers (next 450 TB $0.019968 us / $0.018432 uk / $0.018816 eu). Cool/Cold/Archive are flat."]
+        },
+        {
+          "id": "cool", "band": "infrequent", "label": "Cool",
+          "storage_gb_month": { "us": 0.0152, "uk": 0.0105, "eu": 0.01 },
+          "write_per_1k": { "us": 0.01, "uk": 0.011, "eu": 0.01 },
+          "read_per_1k": { "us": 0.001, "uk": 0.0011, "eu": 0.001 },
+          "retrieval_per_gb": { "us": 0.01, "uk": 0.011, "eu": 0.01 },
+          "min_duration_days": 30, "min_object_kb": 0,
+          "zrs": {
+            "storage_gb_month": { "us": 0.019, "uk": 0.013125, "eu": 0.0131 },
+            "write_per_1k": { "us": 0.01, "uk": 0.011, "eu": 0.01 },
+            "read_per_1k": { "us": 0.001, "uk": 0.0011, "eu": 0.001 },
+            "retrieval_per_gb": { "us": 0.01, "uk": 0.011, "eu": 0.01 }
+          }
+        },
+        {
+          "id": "cold", "band": "cold", "label": "Cold",
+          "storage_gb_month": { "us": 0.0036, "uk": 0.0045, "eu": 0.0045 },
+          "write_per_1k": { "us": 0.018, "uk": 0.018, "eu": 0.018 },
+          "read_per_1k": { "us": 0.01, "uk": 0.01, "eu": 0.01 },
+          "retrieval_per_gb": { "us": 0.03, "uk": 0.03, "eu": 0.03 },
+          "min_duration_days": 90, "min_object_kb": 0,
+          "zrs": {
+            "storage_gb_month": { "us": 0.004, "uk": 0.005, "eu": 0.005 },
+            "write_per_1k": { "us": 0.02, "uk": 0.02, "eu": 0.02 },
+            "read_per_1k": { "us": 0.01, "uk": 0.01, "eu": 0.01 },
+            "retrieval_per_gb": { "us": 0.03, "uk": 0.03, "eu": 0.03 }
+          }
+        },
+        {
+          "id": "archive", "band": "archive", "label": "Archive",
+          "storage_gb_month": { "us": 0.00099, "uk": 0.0018, "eu": 0.0018 },
+          "write_per_1k": { "us": 0.01, "uk": 0.0106, "eu": 0.012 },
+          "read_per_1k": { "us": 0.5, "uk": 0.53, "eu": 0.6 },
+          "retrieval_per_gb": { "us": 0.02, "uk": 0.0208, "eu": 0.024 },
+          "min_duration_days": 180, "min_object_kb": 0,
+          "offline": true, "restore": "up to 15 h standard",
+          "notes": [
+            "Offline: standard rehydration up to 15 hours. High-priority rehydration $0.10 (us) / $0.125 (uk) / $0.13 (eu) per GB with reads at $5.00 / $6.25 / $6.50 per 1k.",
+            "Early deletion from Cool/Cold/Archive is prorated at the tier's storage rate for remaining days.",
+            "Reported (unverified): 128 KiB minimum object size for Cool/Cold/Archive from Jul 2026 (new accounts) / Jul 2027 (all)."
+          ]
+        }
+      ],
+      "egress": {
+        "free": { "type": "flat_gb", "amount": 100 },
+        "tiers": [
+          { "up_to_gb": 10240, "per_gb": { "us": 0.087, "uk": 0.087, "eu": 0.087 }, "note": "Default (Microsoft Global Network) routing; $0.08 with the Internet-routing option. Steps down at ~10/50/150/500 TB." }
+        ]
+      },
+      "free_tier": "12 months: 5 GB Hot LRS + 20k reads + 10k writes/month (new accounts). Always free: first 100 GB/month egress.",
+      "gbp_reference": { "note": "Azure bills UK customers in GBP. UK South storage per GB-month: Hot £0.0145, Cool £0.0079, Cold £0.0034, Archive £0.0014." }
+    },
+    {
+      "id": "gcs",
+      "name": "Google Cloud Storage",
+      "pricing_url": "https://cloud.google.com/storage/pricing",
+      "verified_via": "Official pricing page embedded data (fetched 2026-10-10); us-east1 corroborated by 3 secondary sources.",
+      "last_verified": "2026-10-10",
+      "storage_unit": "GiB",
+      "regions": { "us": "us-east1 (South Carolina)", "uk": "europe-west2 (London)", "eu": "europe-west1 (Belgium)" },
+      "local_presence": { "us": "region", "uk": "region", "eu": "region" },
+      "multi_zone": { "status": "included", "note": "Regional buckets store data redundantly across multiple zones within the region (synchronous).", "source": "https://cloud.google.com/storage/docs/locations" },
+      "classes": [
+        {
+          "id": "standard", "band": "hot", "label": "Standard",
+          "storage_gb_month": { "us": 0.02, "uk": 0.023, "eu": 0.02 },
+          "write_per_1k": { "us": 0.005, "uk": 0.005, "eu": 0.005 },
+          "read_per_1k": { "us": 0.0004, "uk": 0.0004, "eu": 0.0004 },
+          "retrieval_per_gb": { "us": 0, "uk": 0, "eu": 0 },
+          "min_duration_days": 0, "min_object_kb": 0
+        },
+        {
+          "id": "nearline", "band": "infrequent", "label": "Nearline",
+          "storage_gb_month": { "us": 0.01, "uk": 0.013, "eu": 0.01 },
+          "write_per_1k": { "us": 0.01, "uk": 0.01, "eu": 0.01 },
+          "read_per_1k": { "us": 0.001, "uk": 0.001, "eu": 0.001 },
+          "retrieval_per_gb": { "us": 0.01, "uk": 0.01, "eu": 0.01 },
+          "min_duration_days": 30, "min_object_kb": 0
+        },
+        {
+          "id": "coldline", "band": "cold", "label": "Coldline",
+          "storage_gb_month": { "us": 0.004, "uk": 0.007, "eu": 0.004 },
+          "write_per_1k": { "us": 0.02, "uk": 0.02, "eu": 0.02 },
+          "read_per_1k": { "us": 0.01, "uk": 0.01, "eu": 0.01 },
+          "retrieval_per_gb": { "us": 0.02, "uk": 0.02, "eu": 0.02 },
+          "min_duration_days": 90, "min_object_kb": 0
+        },
+        {
+          "id": "archive", "band": "archive", "label": "Archive",
+          "storage_gb_month": { "us": 0.0012, "uk": 0.0025, "eu": 0.0012 },
+          "write_per_1k": { "us": 0.05, "uk": 0.05, "eu": 0.05 },
+          "read_per_1k": { "us": 0.05, "uk": 0.05, "eu": 0.05 },
+          "retrieval_per_gb": { "us": 0.05, "uk": 0.05, "eu": 0.05 },
+          "min_duration_days": 365, "min_object_kb": 0,
+          "notes": ["Online class: millisecond access despite the name, but 365-day minimum and the highest retrieval fee of any provider."]
+        }
+      ],
+      "ops_note": "Operation and retrieval prices are global (location-type based, not per region). Single-region rates shown; dual/multi-region Class A costs double; hierarchical-namespace buckets +30%.",
+      "egress": {
+        "free": { "type": "flat_gb", "amount_by_region": { "us": 100, "uk": 0, "eu": 0 }, "note": "Always Free 100 GB/month applies to North America sources only (China & Australia destinations excluded); UK and EU buckets get no free egress." },
+        "tiers": [
+          { "up_to_gb": 10240, "per_gb": { "us": 0.12, "uk": 0.12, "eu": 0.12 } },
+          { "up_to_gb": 153600, "per_gb": { "us": 0.11, "uk": 0.11, "eu": 0.11 } },
+          { "up_to_gb": null, "per_gb": { "us": 0.08, "uk": 0.08, "eu": 0.08 } }
+        ],
+        "tier_note": "Per GiB, destination-based (source region irrelevant). Worldwide rates shown; China ($0.20-0.23) and Australia ($0.15-0.19) cost more. Tier boundaries are TiB."
+      },
+      "free_tier": "5 GB-months Standard + 5k Class A + 50k Class B ops/month, only in us-west1/us-central1/us-east1. 100 GB/month free egress from North America."
+    },
+    {
+      "id": "cloudflare-r2",
+      "name": "Cloudflare R2",
+      "pricing_url": "https://developers.cloudflare.com/r2/pricing/",
+      "verified_via": "Official Cloudflare docs (fetched 2026-10-10).",
+      "last_verified": "2026-10-10",
+      "storage_unit": "GB",
+      "regions": { "us": "global (single price list)", "uk": "global (single price list)", "eu": "global (EU jurisdiction available)" },
+      "local_presence": { "us": "region", "uk": "hint", "eu": "region" },
+      "multi_zone": { "status": "unpublished", "note": "Cloudflare does not publish an availability-zone redundancy model for R2." },
+      "residency_notes": {
+        "uk": "Data is placed by Cloudflare location hint (Western Europe) - UK residency is not guaranteed. R2's only hard residency guarantee is its EU jurisdiction, which excludes the UK.",
+        "eu": "The EU jurisdiction setting is a hard guarantee that data stays in the EU - R2's only firm residency commitment."
+      },
+      "native_ops_unit": "per million (normalized here to per 1,000)",
+      "classes": [
+        {
+          "id": "standard", "band": "hot", "label": "R2 Standard",
+          "storage_gb_month": { "us": 0.015, "uk": 0.015, "eu": 0.015 },
+          "write_per_1k": { "us": 0.0045, "uk": 0.0045, "eu": 0.0045 },
+          "read_per_1k": { "us": 0.00036, "uk": 0.00036, "eu": 0.00036 },
+          "retrieval_per_gb": { "us": 0, "uk": 0, "eu": 0 },
+          "min_duration_days": 0, "min_object_kb": 0
+        },
+        {
+          "id": "infrequent-access", "band": "infrequent", "label": "R2 Infrequent Access",
+          "storage_gb_month": { "us": 0.01, "uk": 0.01, "eu": 0.01 },
+          "write_per_1k": { "us": 0.009, "uk": 0.009, "eu": 0.009 },
+          "read_per_1k": { "us": 0.0009, "uk": 0.0009, "eu": 0.0009 },
+          "retrieval_per_gb": { "us": 0.01, "uk": 0.01, "eu": 0.01 },
+          "min_duration_days": 30, "min_object_kb": 0,
+          "notes": ["30-day minimum billed even if deleted/moved early. Free tier does not apply to this class."]
+        }
+      ],
+      "egress": {
+        "free": { "type": "unlimited", "note": "Egress to internet is $0 via Workers, S3 API, or r2.dev." },
+        "tiers": []
+      },
+      "free_tier": "Monthly, Standard class only: 10 GB-months storage, 1M Class A ops, 10M Class B ops. Delete operations are free.",
+      "region_note": "Location hints and jurisdictions (EU, FedRAMP) affect data placement only; no price difference."
+    },
+    {
+      "id": "backblaze-b2",
+      "name": "Backblaze B2",
+      "pricing_url": "https://www.backblaze.com/cloud-storage/pricing",
+      "verified_via": "Official pricing + transaction-pricing pages (fetched 2026-10-10). Reflects the May 2026 pricing change.",
+      "last_verified": "2026-10-10",
+      "storage_unit": "GB",
+      "regions": { "us": "US regions (single price list)", "uk": "EU region (single price list; no UK region, nearest is EU Central)", "eu": "eu-central-003 (Amsterdam)" },
+      "local_presence": { "us": "region", "uk": "none", "eu": "region" },
+      "multi_zone": { "status": "unpublished", "note": "Backblaze does not publish a multi-datacentre redundancy guarantee within a B2 region." },
+      "residency_notes": { "uk": "no UK datacentre - nearest region is Amsterdam (EU Central)" },
+      "classes": [
+        {
+          "id": "standard", "band": "hot", "label": "B2 (single class)",
+          "storage_gb_month": { "us": 0.00695, "uk": 0.00695, "eu": 0.00695 },
+          "write_per_1k": { "us": 0, "uk": 0, "eu": 0 },
+          "read_per_1k": { "us": 0, "uk": 0, "eu": 0 },
+          "retrieval_per_gb": { "us": 0, "uk": 0, "eu": 0 },
+          "min_duration_days": 0, "min_object_kb": 0,
+          "notes": [
+            "$6.95/TB/month pay-as-you-go ('starts at' - volume/term commitments discount further). Raised from $6/TB effective 2026-05-01.",
+            "All Class A/B/C API calls free since 2026-05-01. Only Class D (outbound calls, e.g. event notifications) bills: $0.004/10k after 2,500 free/day.",
+            "No minimum storage duration, no minimum file size, no early-deletion fees."
+          ]
+        }
+      ],
+      "egress": {
+        "free": { "type": "multiple_of_storage", "factor": 3, "note": "Free up to 3x average monthly data stored; unlimited free via partner CDNs (Cloudflare, Fastly, bunny.net, ...)." },
+        "tiers": [ { "up_to_gb": null, "per_gb": { "us": 0.01, "uk": 0.01 } } ]
+      },
+      "free_tier": "10 GB storage free.",
+      "region_note": "US and EU regions share one price list (single published prices; 2019 official statement of parity)."
+    },
+    {
+      "id": "wasabi",
+      "name": "Wasabi",
+      "pricing_url": "https://wasabi.com/pricing",
+      "verified_via": "Official pricing page + pricing FAQ + docs.wasabi.com (fetched 2026-10-10). Reflects the July 2026 price change.",
+      "last_verified": "2026-10-10",
+      "storage_unit": "GB",
+      "regions": { "us": "us-east-1 (N. Virginia)", "uk": "eu-west-1 / uk-1 (London, Slough)", "eu": "eu-central-1 (Amsterdam) / eu-central-2 (Frankfurt)" },
+      "local_presence": { "us": "region", "uk": "region", "eu": "region" },
+      "multi_zone": { "status": "unpublished", "note": "Wasabi does not publish a multi-availability-zone redundancy guarantee within a region." },
+      "classes": [
+        {
+          "id": "hot", "band": "hot", "label": "Hot Cloud Storage (single class)",
+          "storage_gb_month": { "us": 0.0078, "uk": 0.0078, "eu": 0.0078 },
+          "write_per_1k": { "us": 0, "uk": 0, "eu": 0 },
+          "read_per_1k": { "us": 0, "uk": 0, "eu": 0 },
+          "retrieval_per_gb": { "us": 0, "uk": 0, "eu": 0 },
+          "min_duration_days": 90, "min_object_kb": 0,
+          "notes": [
+            "$7.99/TB/month pay-as-you-go, uniform across all regions (raised from $6.99 effective 2026-07-01; many third-party sites still show the old price). Published per-GB figure $0.0078 uses base-2 arithmetic.",
+            "90-day minimum storage duration on every object: deleting early bills the remaining days as 'Timed Deleted Storage'. A 30-day option exists for some accounts; eligibility criteria unpublished.",
+            "API requests are free under a fair-use policy (no numeric limit published).",
+            "A separate 'Wasabi Fire' NVMe performance class (~$19.99/TB) launched 2026 - out of scope here."
+          ]
+        }
+      ],
+      "monthly_minimum": { "type": "storage_floor_gb", "amount": 1024, "note": "Pay-as-you-go bills a minimum of 1 TB active storage (~$7.99/month) even if you store less." },
+      "egress": {
+        "free": { "type": "fair_use", "note": "No egress charges and no overage billing. Fair-use guideline: monthly egress should not exceed active storage; sustained excess risks service limitation/suspension rather than fees." },
+        "tiers": []
+      },
+      "free_tier": "Trial only: 100 GB for 30 days (business email) or 10 GB for 14 days (freemail); no credit card.",
+      "region_note": "Single published price list across NA/EMEA/APAC. Two UK regions: eu-west-1 (London/Slough) and eu-west-3 (Chessington)."
+    }
+  ]
+}
